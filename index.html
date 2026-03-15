@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA MAKER 4 — Tutorial Completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-card: #1a1a1a;
+  --bg-code: #111111;
+  --text: #e8e8e8;
+  --text-muted: #888888;
+  --text-dim: #555555;
+  --accent: #e63946;
+  --accent-glow: rgba(230, 57, 70, 0.15);
+  --gold: #ffd700;
+  --gold-dim: rgba(255, 215, 0, 0.12);
+  --border: #2a2a2a;
+  --border-light: #333333;
+  --green: #4ade80;
+  --sidebar-w: 280px;
+  --header-h: 56px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+.light-mode {
+  --bg: #f5f5f0;
+  --bg-surface: #ffffff;
+  --bg-card: #fafaf7;
+  --bg-code: #f0efe8;
+  --text: #1a1a1a;
+  --text-muted: #666666;
+  --text-dim: #999999;
+  --border: #e0e0d8;
+  --border-light: #d0d0c8;
+  --accent-glow: rgba(230, 57, 70, 0.08);
+  --gold-dim: rgba(255, 215, 0, 0.08);
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 20px); }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  transition: background .3s, color .3s;
+}
+
+/* ========== PROGRESS BAR ========== */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  width: 0%;
+  z-index: 9999;
+  transition: width .1s linear;
+}
+
+/* ========== HEADER ========== */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px 0 24px;
+  z-index: 1000;
+  transition: background .3s;
+}
+.light-mode header { background: rgba(245,245,240,0.92); }
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-left h1 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+.header-left h1 span { color: var(--accent); }
+.header-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#theme-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  transition: all .2s;
+}
+#theme-toggle:hover { border-color: var(--gold); }
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  width: var(--sidebar-w);
+  height: calc(100vh - var(--header-h));
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px 0;
+  z-index: 900;
+  transition: transform .3s, background .3s;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-section {
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+.sidebar-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  padding-left: 12px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  transition: all .15s;
+  margin-bottom: 2px;
+}
+.sidebar a:hover { color: var(--text); background: var(--accent-glow); }
+.sidebar a.active {
+  color: var(--accent);
+  background: var(--accent-glow);
+  font-weight: 600;
+}
+.sidebar a .nav-emoji { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar a .nav-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ========== MAIN ========== */
+main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  padding: 40px 48px 80px;
+  max-width: 900px;
+}
+
+/* ========== SECTIONS ========== */
+.module-section {
+  margin-bottom: 64px;
+  animation: fadeInUp .5s ease both;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scene cut divider */
+.scene-cut {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 56px 0 48px;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.scene-cut::before, .scene-cut::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+.scene-cut .cut-icon { font-size: 1.2rem; }
+
+/* Module title */
+.module-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.module-title .mod-num {
+  background: var(--accent);
+  color: #fff;
+  padding: 2px 12px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+.module-subtitle {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  margin: 32px 0 12px;
+  color: var(--gold);
+}
+
+h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 20px 0 8px;
+}
+
+p { margin-bottom: 12px; }
+
+ul, ol {
+  margin: 8px 0 16px 20px;
+}
+li { margin-bottom: 6px; }
+
+strong { color: var(--text); }
+
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 12px 20px;
+  margin: 16px 0;
+  background: var(--accent-glow);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ========== CARDS ========== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: transform .2s, border-color .2s;
+}
+.card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.card-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 8px 0 4px;
+}
+.card-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ========== PROMPT BLOCKS ========== */
+.prompt-block {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 16px 0;
+  overflow: hidden;
+}
+.prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+}
+.light-mode .prompt-header { background: rgba(0,0,0,0.03); }
+.prompt-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+.copy-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  transition: all .2s;
+}
+.copy-btn:hover { background: #c62d3a; }
+.copy-btn.copied { background: var(--green); color: #000; }
+.prompt-content {
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: var(--text-muted);
+}
+
+/* ========== ACCORDION ========== */
+.accordion {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 16px 0;
+  overflow: hidden;
+}
+.accordion-trigger {
+  width: 100%;
+  background: var(--bg-card);
+  border: none;
+  color: var(--text);
+  padding: 14px 20px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background .2s;
+}
+.accordion-trigger:hover { background: var(--accent-glow); }
+.accordion-trigger .arrow {
+  transition: transform .3s;
+  font-size: 0.8rem;
+}
+.accordion-trigger.open .arrow { transform: rotate(180deg); }
+.accordion-body {
+  display: none;
+  padding: 0;
+  background: var(--bg-code);
+}
+.accordion-body.show { display: block; }
+
+/* ========== TABLES ========== */
+.table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+th {
+  background: var(--bg-card);
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--gold);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--accent-glow); }
+
+/* ========== COMPARISON ========== */
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.comp-bad, .comp-good {
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.comp-bad {
+  background: rgba(230,57,70,0.08);
+  border: 1px solid rgba(230,57,70,0.25);
+}
+.comp-good {
+  background: rgba(74,222,128,0.06);
+  border: 1px solid rgba(74,222,128,0.2);
+}
+.comp-label {
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.comp-bad .comp-label { color: var(--accent); }
+.comp-good .comp-label { color: var(--green); }
+
+/* ========== PIPELINE ========== */
+.pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 24px 0;
+  align-items: center;
+}
+.pipeline-step {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  text-align: center;
+  min-width: 140px;
+  transition: transform .2s, border-color .2s;
+}
+.pipeline-step:hover { transform: scale(1.04); border-color: var(--gold); }
+.pipeline-step .step-num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--accent);
+}
+.pipeline-step .step-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.pipeline-step .step-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.pipeline-arrow {
+  font-size: 1.4rem;
+  color: var(--gold);
+  padding: 0 6px;
+}
+
+/* ========== CHECKLIST ========== */
+.checklist {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+}
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  cursor: pointer;
+  user-select: none;
+}
+.checklist-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.checklist-item.checked .check-text {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+/* ========== PRACTICE BOX ========== */
+.practice-box {
+  background: var(--gold-dim);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 20px 0;
+}
+.practice-box .practice-title {
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
+  font-size: 0.92rem;
+}
+
+/* ========== TIP & WARNING ========== */
+.tip-box {
+  background: rgba(74,222,128,0.06);
+  border-left: 3px solid var(--green);
+  padding: 14px 20px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+.warn-box {
+  background: rgba(230,57,70,0.06);
+  border-left: 3px solid var(--accent);
+  padding: 14px 20px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  margin-left: var(--sidebar-w);
+  padding: 40px 48px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+    z-index: 950;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+  .hamburger { display: block; }
+  main { margin-left: 0; padding: 32px 20px 60px; }
+  footer { margin-left: 0; padding: 32px 20px; }
+  .module-title { font-size: 1.8rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .comparison { grid-template-columns: 1fr; }
+  .pipeline { flex-direction: column; align-items: stretch; }
+  .pipeline-arrow { transform: rotate(90deg); text-align: center; }
+  .header-sub { display: none; }
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 940;
+}
+.sidebar-overlay.show { display: block; }
+
+/* Links */
+a { color: var(--accent); }
+a:hover { color: var(--gold); }
+
+/* Inline code */
+code {
+  font-family: var(--font-mono);
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+
+/* Prompt structure visual */
+.prompt-structure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.prompt-structure .ps-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+.prompt-structure .ps-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--gold);
+  font-size: 1.2rem;
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Header -->
+<header>
+  <div class="header-left">
+    <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+    <div>
+      <h1>IA MAKER <span>4</span></h1>
+      <div class="header-sub">Workshop Dia 1 — @ofilmboss</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button id="theme-toggle">☀️ Light</button>
+  </div>
+</header>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Início</div>
+    <a href="#checklist"><span class="nav-emoji">✅</span><span class="nav-text">Checklist Rápido</span></a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Módulos</div>
+    <a href="#mod1"><span class="nav-emoji">🚀</span><span class="nav-text">1. Introdução e Motivação</span></a>
+    <a href="#mod2"><span class="nav-emoji">🤖</span><span class="nav-text">2. Tipos de IA e Limitações</span></a>
+    <a href="#mod3"><span class="nav-emoji">🎯</span><span class="nav-text">3. Qualidade e Critério</span></a>
+    <a href="#mod4"><span class="nav-emoji">🔮</span><span class="nav-text">4. As 9 Camadas</span></a>
+    <a href="#mod5"><span class="nav-emoji">📋</span><span class="nav-text">5. Prompt Perfeito</span></a>
+    <a href="#mod6"><span class="nav-emoji">💰</span><span class="nav-text">6. Gerar Resultado</span></a>
+    <a href="#mod7"><span class="nav-emoji">🎬</span><span class="nav-text">7. Pipeline Profissional</span></a>
+    <a href="#mod8"><span class="nav-emoji">🧑‍🎨</span><span class="nav-text">8. Criação de Personagem</span></a>
+    <a href="#mod9"><span class="nav-emoji">🎨</span><span class="nav-text">9. Estilos de Animação</span></a>
+    <a href="#mod10"><span class="nav-emoji">📷</span><span class="nav-text">10. Enquadramento</span></a>
+    <a href="#mod11"><span class="nav-emoji">📖</span><span class="nav-text">11. Storytelling Visual</span></a>
+    <a href="#mod12"><span class="nav-emoji">📅</span><span class="nav-text">12. Próximos Conteúdos</span></a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Recursos</div>
+    <a href="#prompts"><span class="nav-emoji">📋</span><span class="nav-text">Banco de Prompts</span></a>
+    <a href="#ferramentas"><span class="nav-emoji">🛠️</span><span class="nav-text">Ferramentas</span></a>
+    <a href="#links"><span class="nav-emoji">🔗</span><span class="nav-text">Links Úteis</span></a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section id="checklist" class="module-section">
+    <div class="module-title">✅ Checklist Rápido</div>
+    <p class="module-subtitle">Resumo dos passos essenciais do workshop — marque conforme for praticando</p>
+
+    <div class="checklist">
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Entender os tipos de IA (LLM, Imagem, Vídeo, Música) e suas limitações</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Desenvolver critério: buscar boas referências fora do seu nicho</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Memorizar as 9 camadas de qualidade (ação, personagem, texturas, universo, enquadramento, iluminação, emoção, consistência, lentes)</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Dominar a estrutura do prompt: [Sujeito] [Ação] [Local] [Câmera] [Iluminação] [Estilo]</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Entender a técnica de "Ponte de resultado" para contornar limitações</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Seguir o pipeline: Inspiração → Personagem → Primeiro Frame → Storytelling → Vídeos → Upscale → Edição</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Criar um personagem usando um dos 3 métodos (desenho, foto real, mistura)</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Escolher um estilo de animação definido (não genérico)</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Dominar os 9 tipos de enquadramento/shot</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Praticar storytelling visual: sequência de enquadramentos que conta uma história</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Salvar e praticar com os 5 prompts do PromptBoss</span></label>
+      <label class="checklist-item"><input type="checkbox"><span class="check-text">Criar o moodboard do meu primeiro projeto</span></label>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 1 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 1</div>
+  <section id="mod1" class="module-section">
+    <div class="module-title"><span class="mod-num">01</span> Introdução e Motivação</div>
+    <p class="module-subtitle">Por que agora é o momento certo pra dominar a IA</p>
+
+    <h3>O que é o IA MAKER 4</h3>
+    <p>Workshop intensivo sobre criação de conteúdo com IA — focado em <strong>animação 3D, geração de imagens e vídeos profissionais</strong>. Ministrado por <strong>@ofilmboss</strong>.</p>
+
+    <h3>5 Razões para Começar Agora</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-title">Todo mundo é iniciante</div>
+        <div class="card-desc">Ninguém tem 10 anos de experiência em IA generativa. O campo é novo pra todos.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-title">Muito mercado</div>
+        <div class="card-desc">Demanda crescente por conteúdo com IA em todas as áreas.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <div class="card-title">Profissionalmente valorizado</div>
+        <div class="card-desc">Empresas estão buscando quem domina IA.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <div class="card-title">Viralizando</div>
+        <div class="card-desc">Conteúdo com IA tem enorme potencial viral.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">05</div>
+        <div class="card-title">Qualidade competitiva</div>
+        <div class="card-desc">Resultados já competem com produção tradicional.</div>
+      </div>
+    </div>
+
+    <h3>Resultados Reais do @ofilmboss</h3>
+    <p>Números dos últimos posts:</p>
+    <ul>
+      <li>730K views</li>
+      <li>239K views</li>
+      <li>1M views</li>
+      <li>214K views</li>
+      <li><strong>17 milhões de views em 30 dias</strong></li>
+    </ul>
+
+    <blockquote>"Isso é oportunidade de negócio!" — Muitas visualizações geram orçamentos, parcerias e convites de grandes marcas.</blockquote>
+
+    <h3>Empresas Grandes Já Investem em IA</h3>
+    <p>Grandes marcas já estão investindo em publicidade feita inteiramente com IA generativa. Isso não é mais futuro — é o presente.</p>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Pesquise 3 exemplos de marcas grandes usando IA em publicidade</li>
+        <li>Salve essas referências no seu moodboard</li>
+        <li>Anote: qual tipo de conteúdo com IA combina com sua área?</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 2 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 2</div>
+  <section id="mod2" class="module-section">
+    <div class="module-title"><span class="mod-num">02</span> Tipos de IA e Limitações</div>
+    <p class="module-subtitle">Entenda cada categoria de IA e o que pode te limitar</p>
+
+    <h3>Os 4 Tipos de IA</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Tipo</th><th>Ferramentas</th><th>Contexto</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>🧠 LLM (Texto)</strong></td><td>ChatGPT, Claude, Gemini</td><td>✅ Tem contexto</td></tr>
+          <tr><td><strong>🖼️ Geradores de Imagem</strong></td><td>Midjourney, Seadream 4k, Nano Banana Pro/2</td><td>❌ Sem contexto</td></tr>
+          <tr><td><strong>🎬 Geradores de Vídeo</strong></td><td>Kling 2.6, Kling 3.0, Veo 3.1</td><td>❌ Sem contexto</td></tr>
+          <tr><td><strong>🎵 Criação de Música</strong></td><td>Suno v5</td><td>❌ Sem contexto</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip-box">
+      💡 <strong>O que é "contexto"?</strong> LLMs lembram da conversa anterior. Geradores de imagem/vídeo tratam cada prompt de forma isolada — não "lembram" do que geraram antes.
+    </div>
+
+    <h3>Limites da IA</h3>
+    <blockquote>"IA é perfeito e faz tudo? Não! Mas faz muito!"</blockquote>
+
+    <h4>O que pode te limitar:</h4>
+    <ol>
+      <li><strong>Limite da IA</strong> — dificuldade com:
+        <ul>
+          <li>Movimentos rápidos</li>
+          <li>Fala/speech</li>
+          <li>Postura caricata</li>
+        </ul>
+      </li>
+      <li><strong>Limite de conhecimento</strong> — se seu conhecimento é baixo, seu output é baixo</li>
+    </ol>
+
+    <blockquote>"O objetivo é sempre ficar o mais próximo do limite da IA."</blockquote>
+
+    <div class="comparison">
+      <div class="comp-bad">
+        <div class="comp-label">⚠️ Erro Comum</div>
+        <p>Achar que a IA faz tudo sozinha e entregar qualquer resultado.</p>
+      </div>
+      <div class="comp-good">
+        <div class="comp-label">✅ Certo</div>
+        <p>Conhecer os limites da IA e trabalhar com eles — usando seu conhecimento para guiar a ferramenta ao máximo.</p>
+      </div>
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Teste gerar uma cena com movimento rápido e veja o resultado</li>
+        <li>Compare um prompt genérico vs um prompt detalhado na mesma ferramenta</li>
+        <li>Identifique: qual tipo de IA é mais relevante pro SEU trabalho?</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 3 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 3</div>
+  <section id="mod3" class="module-section">
+    <div class="module-title"><span class="mod-num">03</span> Qualidade e Critério</div>
+    <p class="module-subtitle">#TenhaCritério — o que separa o amador do profissional</p>
+
+    <h3>Como ter um nível alto de qualidade?</h3>
+    <ol>
+      <li><strong>Não aceite qualquer animação</strong> — seja exigente com o resultado</li>
+      <li><strong>Tenha boas referências</strong> — busque o melhor que existe</li>
+      <li><strong>Gaste tempo no projeto</strong> — qualidade leva tempo</li>
+    </ol>
+
+    <h3>Como ser criativo?</h3>
+    <h4>Misture boas referências</h4>
+    <ul>
+      <li>Busque referências de <strong>FORA</strong> do seu nicho</li>
+      <li>Capas de livros, games, arquitetura, histórias interessantes, design</li>
+      <li><strong>Não fique só vendo vídeos de concorrentes</strong></li>
+    </ul>
+
+    <div class="warn-box">
+      ⚠️ <strong>Erro Comum:</strong> Buscar referências apenas em conteúdos similares ao seu. Isso cria um ciclo de repetição onde todo mundo parece igual.
+    </div>
+
+    <h3>"Vivendo fora da gaiola"</h3>
+    <blockquote>"Saia da gaiola e aumente o seu repertório."</blockquote>
+
+    <h4>Repertório é sua alma — 5 formas de expandir:</h4>
+    <ol>
+      <li>Priorize vida fora do trabalho</li>
+      <li>Aproveite família</li>
+      <li>Escute histórias da vó/mãe/pai</li>
+      <li>Assista filmes/séries diferentes do que está acostumado</li>
+      <li>Consuma músicas de gêneros que não conhece</li>
+    </ol>
+
+    <div class="comparison">
+      <div class="comp-bad">
+        <div class="comp-label">⚠️ Erro Comum</div>
+        <p>Ficar preso no mesmo tipo de conteúdo, consumindo apenas o que concorrentes fazem.</p>
+      </div>
+      <div class="comp-good">
+        <div class="comp-label">✅ Certo</div>
+        <p>Criar um repertório diverso: cinema, arquitetura, arte, música, histórias reais. Isso torna seu trabalho único.</p>
+      </div>
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Crie uma pasta/board de referências com pelo menos 10 imagens de áreas diferentes (arquitetura, pintura, cinema, moda)</li>
+        <li>Assista um filme de um gênero que nunca assistiria — anote 3 cenas visuais que chamaram sua atenção</li>
+        <li>Descreva em 1 parágrafo: qual é o "estilo visual" que você quer ter?</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 4 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 4</div>
+  <section id="mod4" class="module-section">
+    <div class="module-title"><span class="mod-num">04</span> As 9 Camadas de Qualidade</div>
+    <p class="module-subtitle">#Aprofunde — pense camada por camada para resultados profissionais</p>
+
+    <div class="warn-box">
+      ⚠️ <strong>O erro comum é ser superficial</strong> — as pessoas descrevem a ação e no máximo o personagem. Resultado: imagens genéricas que parecem feitas por qualquer um.
+    </div>
+
+    <h3>As 9 Camadas</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-title">🎭 Ação da Cena</div>
+        <div class="card-desc">O que está acontecendo? Qual é o momento exato?</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-title">🧑 Personagem</div>
+        <div class="card-desc">Quem está em cena? Como ele é? O que veste?</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <div class="card-title">🧱 Texturas e Imperfeições</div>
+        <div class="card-desc">Poros, desgaste, arranhões, detalhes realistas.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <div class="card-title">🌍 Universo</div>
+        <div class="card-desc">Onde se passa? Qual é o mundo visual?</div>
+      </div>
+      <div class="card">
+        <div class="card-num">05</div>
+        <div class="card-title">📷 Enquadramento</div>
+        <div class="card-desc">Câmera, ângulo, composição — regra dos terços, proporção áurea.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">06</div>
+        <div class="card-title">💡 Iluminação</div>
+        <div class="card-desc">Tipo de luz, direção, clima — cinematográfica, natural, dramática.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">07</div>
+        <div class="card-title">❤️ Emoção</div>
+        <div class="card-desc">Que sentimento a cena transmite ao espectador?</div>
+      </div>
+      <div class="card">
+        <div class="card-num">08</div>
+        <div class="card-title">🔄 Consistência</div>
+        <div class="card-desc">Manter coerência visual entre todas as cenas.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">09</div>
+        <div class="card-title">🔍 Lentes</div>
+        <div class="card-desc">Tipo de lente, abertura, efeitos ópticos (aberração cromática, bokeh).</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      💡 <strong>Dica:</strong> Ao escrever seu prompt, passe mentalmente por cada uma das 9 camadas. Se não faz sentido incluir alguma, tudo bem — mas pelo menos considere.
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Pegue uma imagem que você acha profissional e identifique todas as 9 camadas presentes</li>
+        <li>Escreva um prompt descrevendo uma cena, passando camada por camada</li>
+        <li>Compare: gere a mesma cena com prompt de 2 camadas vs prompt de 7+ camadas</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 5 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 5</div>
+  <section id="mod5" class="module-section">
+    <div class="module-title"><span class="mod-num">05</span> Segredo do Prompt Perfeito</div>
+    <p class="module-subtitle">O equilíbrio entre dar detalhe e deixar a IA trabalhar</p>
+
+    <blockquote>"As pessoas ou super valorizam o prompt ou ignoram, aqui vence o equilíbrio."</blockquote>
+
+    <h3>Prompt Vago vs Prompt Detalhado</h3>
+    <p><strong>Quanto mais vago, mais a IA decide por você.</strong></p>
+
+    <div class="comparison">
+      <div class="comp-bad">
+        <div class="comp-label">⚠️ Prompt Vago</div>
+        <code>Animação 3d de um urso na floresta</code>
+        <p style="margin-top:8px;font-size:0.85rem;">Resultado: "É bobinho e genérico, não é feio, mas hoje em dia não é profissional"</p>
+      </div>
+      <div class="comp-good">
+        <div class="comp-label">✅ Prompt Detalhado</div>
+        <code>[Descrição com câmera, iluminação, texturas, lente, estilo...]</code>
+        <p style="margin-top:8px;font-size:0.85rem;">Resultado: "É cinematográfico, parece cena de filme caro. Mais valorizado"</p>
+      </div>
+    </div>
+
+    <h3>Estrutura do Prompt (ordem de importância)</h3>
+
+    <div class="prompt-structure">
+      <div class="ps-item" style="border-color:var(--accent);">🧑 Sujeito</div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-item">🎭 Ação</div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-item">📍 Local</div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-item">📷 Composição / Câmera</div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-item">💡 Iluminação</div>
+      <div class="ps-arrow">→</div>
+      <div class="ps-item" style="border-color:var(--gold);">🎨 Estilo</div>
+    </div>
+
+    <blockquote>"Não precisa decorar... o importante é entender que é por ordem de importância."</blockquote>
+
+    <h3>Ponte de Resultado</h3>
+    <p>Quando a IA não consegue gerar o que você quer diretamente:</p>
+    <div class="tip-box">
+      💡 <strong>Transforme em outra coisa primeiro, depois vá para onde você quer.</strong><br>
+      Exemplo: se a IA não consegue gerar um personagem 3D detalhado direto, primeiro gere um esboço/desenho, depois converta para 3D.
+    </div>
+
+    <div class="comparison">
+      <div class="comp-bad">
+        <div class="comp-label">⚠️ Erro Comum</div>
+        <p>Insistir no mesmo prompt quando a IA não está conseguindo entregar o resultado.</p>
+      </div>
+      <div class="comp-good">
+        <div class="comp-label">✅ Certo</div>
+        <p>Usar a técnica de "ponte": gerar em outro formato/estilo intermediário e depois converter para o resultado final desejado.</p>
+      </div>
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Escreva o mesmo cenário com um prompt vago e um detalhado — compare</li>
+        <li>Pratique a estrutura: monte 3 prompts seguindo [Sujeito] [Ação] [Local] [Câmera] [Luz] [Estilo]</li>
+        <li>Teste a "ponte": gere um esboço e depois converta para 3D cinematográfico</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 6 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 6</div>
+  <section id="mod6" class="module-section">
+    <div class="module-title"><span class="mod-num">06</span> Gerar Resultado e Vender</div>
+    <p class="module-subtitle">Criação é metade — saber vender completa</p>
+
+    <h3>Para gerar resultado real</h3>
+    <p>Não basta criar — precisa saber:</p>
+    <ul>
+      <li><strong>Vender</strong> — transformar criações em oportunidades</li>
+      <li><strong>Criação de conteúdo</strong> — formatos que engajam</li>
+      <li><strong>Crescer audiência</strong> — construir comunidade</li>
+      <li><strong>Gerar views</strong> — entender distribuição</li>
+      <li><strong>"Vender sem vender"</strong> — atrair pela qualidade do trabalho</li>
+    </ul>
+
+    <div class="tip-box">
+      💡 <strong>Conceito-chave:</strong> "Vender sem vender" = mostrar trabalho tão bom que as pessoas vêm até você pedindo orçamento, sem você precisar oferecer diretamente.
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Crie um vídeo/animação curta (5-10 segundos) de alta qualidade para postar</li>
+        <li>Pense: se alguém visse isso, saberia o que você faz e querer te contratar?</li>
+        <li>Monte uma mini-vitrine com 3 peças do seu melhor trabalho</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 7 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 7</div>
+  <section id="mod7" class="module-section">
+    <div class="module-title"><span class="mod-num">07</span> Pipeline de Criação Profissional</div>
+    <p class="module-subtitle">Processos claros mudam o jogo — pare de "criar na raça"</p>
+
+    <blockquote>"Quer ter consistência? Tenha processo! Processos claros mudam o jogo."</blockquote>
+
+    <h3>Os 5 Erros Comuns</h3>
+    <ol>
+      <li>Sai criando "na raça" sem planejamento</li>
+      <li>Não entende o básico sobre prompt</li>
+      <li>Usar modelo de IA errado para a tarefa</li>
+      <li>Não respeita a ordem das coisas</li>
+      <li><strong>Resultado?</strong> Qualidade depende da "boa vontade" da IA, não de você</li>
+    </ol>
+
+    <h3>O Pipeline Completo</h3>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-num">01</div>
+        <div class="step-label">Inspiração e Meta</div>
+        <div class="step-desc">Defina estilo, clima, sentimento</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-num">02</div>
+        <div class="step-label">Personagem e Universo</div>
+        <div class="step-desc">Crie o protagonista e o mundo</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-num">03</div>
+        <div class="step-label">Primeiro Frame</div>
+        <div class="step-desc">A imagem-chave do projeto</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-num">04</div>
+        <div class="step-label">Storytelling Visual</div>
+        <div class="step-desc">Sequência de enquadramentos</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-num">05</div>
+        <div class="step-label">Direção de Vídeo</div>
+        <div class="step-desc">Geração das animações</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-num">06</div>
+        <div class="step-label">Upscale 4K</div>
+        <div class="step-desc">[Opcional] Melhoria de qualidade</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-num">07</div>
+        <div class="step-label">Montagem e Edição</div>
+        <div class="step-desc">Finalização do projeto</div>
+      </div>
+    </div>
+
+    <h3>META — Defina o destino primeiro</h3>
+    <p>Antes de criar qualquer coisa, defina:</p>
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+      <div class="card">
+        <div class="card-title">🎨 Estilo de vídeo</div>
+        <div class="card-desc">Qual visual você quer?</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🌫️ Clima</div>
+        <div class="card-desc">Qual é o mood geral?</div>
+      </div>
+      <div class="card">
+        <div class="card-title">❤️ Sentimento</div>
+        <div class="card-desc">O que o espectador vai sentir?</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🧑 Personagem</div>
+        <div class="card-desc">Quem é o protagonista?</div>
+      </div>
+    </div>
+
+    <h3>Moodboard</h3>
+    <p>Crie um moodboard visual com referências de estilo, cor, iluminação e clima <strong>antes de começar a gerar</strong>. É o primeiro passo do processo profissional.</p>
+
+    <div class="comparison">
+      <div class="comp-bad">
+        <div class="comp-label">⚠️ Erro Comum</div>
+        <p>Abrir a ferramenta e sair gerando sem ter clareza do que quer.</p>
+      </div>
+      <div class="comp-good">
+        <div class="comp-label">✅ Certo</div>
+        <p>Criar um moodboard, definir meta (estilo + clima + sentimento + personagem) e só depois ir pra ferramenta de IA.</p>
+      </div>
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Crie um moodboard com 6-10 imagens de referência no Pinterest ou Figma</li>
+        <li>Defina por escrito: estilo, clima, sentimento e personagem do seu projeto</li>
+        <li>Siga cada etapa do pipeline em ordem — sem pular!</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 8 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 8</div>
+  <section id="mod8" class="module-section">
+    <div class="module-title"><span class="mod-num">08</span> Criação de Personagem</div>
+    <p class="module-subtitle">3 métodos para criar personagens únicos com IA</p>
+
+    <h3>Método 1: Desenho a Mão + Troca de Estilo</h3>
+    <p>Desenhe à mão (um esboço simples basta!) e use IA para converter o esboço em estilo 3D detalhado.</p>
+    <div class="tip-box">
+      💡 Não precisa saber desenhar bem — um esboço básico com as proporções e posição já funciona.
+    </div>
+
+    <h3>Método 2: Alterar Foto Real</h3>
+    <p>Pegue uma foto real (personagem de TV, pessoa, referência) e use IA para converter para estilo de animação 3D.</p>
+
+    <div class="accordion">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        📋 Ver prompt de transformação (foto → 3D) <span class="arrow">▼</span>
+      </button>
+      <div class="accordion-body">
+        <div class="prompt-block" style="border:none;border-radius:0;">
+          <div class="prompt-header">
+            <span class="prompt-label">PROMPT — FOTO → 3D</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">📋 Copiar</button>
+          </div>
+          <div class="prompt-content">[Pedido] Mude para Estilo de animação 3d de filme traços levemente de cartoon mas com texturas e detalhes.
+
+[Descrição da cena] O chaves está deitado no chão com o queixo apoiado na mão, com expressão impressionado pois está vendo o Chapolin colorido em miniatura
+
+[Melhorar composição] Com composições mais profissionais como de um diretor de fotografia: Regra dos terços, proporção áurea, bem como os filmes premiados.
+
+[Iluminação] A luz é realista e cinematográfica da luz de um amanhecer, sempre gravado do lado da sombra, como em um documentário
+
+[Consistência] Mantenha os personagens. Apenas mude a ação para posição que foi pedido.
+
+[Mais realismo] Quero texturas no personagem, poros na pele, leves imperfeições, textura na roupa e brilhos realistas.
+
+[Melhorar estética de câmera] Lente cine f1.8 com aberração cromática</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Método 3: Misturar Referências</h3>
+    <p>Combine 3 elementos de referências diferentes para criar um personagem original:</p>
+    <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="card" style="border-color: var(--accent);">
+        <div class="card-title">🎭 Estilo do Personagem</div>
+        <div class="card-desc">Ex: estilo Pixar de um chef</div>
+      </div>
+      <div class="card" style="border-color: var(--gold);">
+        <div class="card-title">👕 Roupa</div>
+        <div class="card-desc">Ex: ilustração 2D de um pescador</div>
+      </div>
+      <div class="card" style="border-color: var(--green);">
+        <div class="card-title">🌍 Estilo do Universo</div>
+        <div class="card-desc">Ex: cidade steampunk com plantas</div>
+      </div>
+    </div>
+    <p>→ <strong>Resultado:</strong> personagem único que mistura as 3 referências, impossível de ser genérico.</p>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Teste cada um dos 3 métodos com um personagem diferente</li>
+        <li>Método 1: Faça um esboço rápido no papel e converta com IA</li>
+        <li>Método 2: Pegue uma foto de um personagem famoso e transforme em 3D</li>
+        <li>Método 3: Escolha 3 referências diferentes e combine</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 9 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 9</div>
+  <section id="mod9" class="module-section">
+    <div class="module-title"><span class="mod-num">09</span> Estilos de Animação</div>
+    <p class="module-subtitle">Evite estilo genérico — defina uma estética clara</p>
+
+    <blockquote>"Evite estilo genérico" — Se você não define o estilo, a IA escolhe um genérico pra você.</blockquote>
+
+    <h3>Estilos do Workshop</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-title">🧶 Boneco de Feltro</div>
+        <div class="card-desc">Textura de feltro/lã com sensação de stop motion. Visual artesanal e charmoso.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-title">🎬 3D Cinematográfica</div>
+        <div class="card-desc">Hiper-realista com detalhes cinematográficos. Parece cena de filme com orçamento alto.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <div class="card-title">🎨 3D Estilizada</div>
+        <div class="card-desc">Mistura entre 2D e 3D. Mantém charme de ilustração com profundidade 3D.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <div class="card-title">✨ Estilos Únicos</div>
+        <div class="card-desc">Diversos outros estilos explorados na galeria. O limite é sua criatividade + referências.</div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comp-bad">
+        <div class="comp-label">⚠️ Erro Comum</div>
+        <p>Gerar "animação 3D" sem especificar estilo. A IA vai escolher o mais genérico possível.</p>
+      </div>
+      <div class="comp-good">
+        <div class="comp-label">✅ Certo</div>
+        <p>Definir claramente: "animação 3D cinematográfica com texturas realistas e detalhes de pele, estilo Pixar com iluminação dramática".</p>
+      </div>
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Gere o mesmo personagem nos 3 estilos (feltro, cinematográfico, estilizado) e compare</li>
+        <li>Escolha: qual estilo melhor representa o projeto que você quer criar?</li>
+        <li>Monte um mini-moodboard só de referências do estilo escolhido</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 10 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 10</div>
+  <section id="mod10" class="module-section">
+    <div class="module-title"><span class="mod-num">10</span> Enquadramento</div>
+    <p class="module-subtitle">Os 9 tipos de shot que todo criador precisa dominar</p>
+
+    <h3>Guia de Enquadramento</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Shot</th><th>Descrição</th><th>Quando usar</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>🔬 Macro Shot</strong></td>
+            <td>Ultra close, detalhes extremos</td>
+            <td>Mostrar texturas, detalhes pequenos, emoção intensa</td>
+          </tr>
+          <tr>
+            <td><strong>🏔️ Extreme Long Shot</strong></td>
+            <td>Plano muito aberto, paisagem</td>
+            <td>Estabelecer o universo, mostrar escala</td>
+          </tr>
+          <tr>
+            <td><strong>😐 Close-up Shot</strong></td>
+            <td>Rosto do personagem</td>
+            <td>Emoção, reação, expressão facial</td>
+          </tr>
+          <tr>
+            <td><strong>👤 Side Profile Shot</strong></td>
+            <td>Perfil lateral</td>
+            <td>Silhueta dramática, introspecção</td>
+          </tr>
+          <tr>
+            <td><strong>👁️ Extreme Close-up</strong></td>
+            <td>Detalhe extremo (olho, mão)</td>
+            <td>Tensão, suspense, detalhe narrativo</td>
+          </tr>
+          <tr>
+            <td><strong>⬇️ High Angle Shot</strong></td>
+            <td>Câmera de cima pra baixo</td>
+            <td>Vulnerabilidade, visão geral, fragilidade</td>
+          </tr>
+          <tr>
+            <td><strong>⬆️ Low Angle Shot</strong></td>
+            <td>Câmera de baixo pra cima</td>
+            <td>Poder, grandeza, imponência</td>
+          </tr>
+          <tr>
+            <td><strong>🫱 Over the Shoulder</strong></td>
+            <td>Por cima do ombro</td>
+            <td>Diálogo, perspectiva do personagem</td>
+          </tr>
+          <tr>
+            <td><strong>↔️ Off-center Shot</strong></td>
+            <td>Personagem fora do centro</td>
+            <td>Regra dos terços, composição cinematográfica</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip-box">
+      💡 <strong>Dica profissional:</strong> Varie os enquadramentos entre as cenas. A monotonia de ângulo é um dos maiores sinais de trabalho amador.
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Gere o mesmo personagem nos 9 enquadramentos diferentes</li>
+        <li>Assista uma cena de filme que você gosta e identifique os tipos de shot usados</li>
+        <li>Monte uma sequência de 4 imagens usando 4 enquadramentos diferentes para contar uma mini-história</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 11 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 11</div>
+  <section id="mod11" class="module-section">
+    <div class="module-title"><span class="mod-num">11</span> Storytelling Visual</div>
+    <p class="module-subtitle">A sequência de enquadramentos que conta uma boa história</p>
+
+    <blockquote>"Sequência de enquadramentos em ordem que ajuda a contar uma boa história de forma mais eficiente."</blockquote>
+
+    <h3>Conceito</h3>
+    <p>Storytelling visual = planejar a sequência de câmeras/enquadramentos <strong>antes</strong> de gerar. É o storyboard do projeto de IA.</p>
+
+    <h3>Hack de Criação</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Jeito Comum</th><th>Storytelling Visual Automático</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Criação individual por cena</td><td>Criar variação das cenas facilita ter ideias</td></tr>
+          <tr><td>Gera muitas imagens</td><td>Upscale no Nano Banana Pro</td></tr>
+          <tr><td>Gasta mais crédito</td><td>Economiza seus créditos</td></tr>
+          <tr><td>Mais trabalho mental</td><td>Economiza seu pensamento</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip-box">
+      💡 <strong>Técnica-chave:</strong> Peça para a IA gerar 4 imagens verticais lado a lado, com variação de enquadramentos, contando uma história. Isso te dá o storyboard de uma vez só!
+    </div>
+
+    <div class="practice-box">
+      <div class="practice-title">🏋️ Na Prática</div>
+      <ul>
+        <li>Use o Prompt 2 (Storytelling Visual 4 Imagens) do Banco de Prompts</li>
+        <li>Defina uma mini-história em 1 frase e gere a sequência visual</li>
+        <li>Escolha as melhores imagens e faça upscale nelas</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULO 12 ============ -->
+  <div class="scene-cut"><span class="cut-icon">🎬</span> CENA 12</div>
+  <section id="mod12" class="module-section">
+    <div class="module-title"><span class="mod-num">12</span> Próximos Conteúdos</div>
+    <p class="module-subtitle">O que vem depois do Dia 1</p>
+
+    <h3>Dia 1 — Parte Prática (Tarde)</h3>
+    <ul>
+      <li>Criação do Projeto 100% prático</li>
+      <li><strong>Gerar todas as imagens</strong> (isso determina a qualidade do filme) — parte mais importante</li>
+      <li>Storytelling visual na prática</li>
+      <li>Upscale simplificado na prática</li>
+      <li>Processos para melhorar o storytelling</li>
+    </ul>
+
+    <h3>Dia 2</h3>
+    <ul>
+      <li>Continuação do Projeto Prático</li>
+      <li>Geração de todos os vídeos</li>
+      <li>Segredo dos prompts para vídeo</li>
+      <li>Melhores ferramentas</li>
+      <li>Geração prática</li>
+      <li>Edição e finalização</li>
+    </ul>
+  </section>
+
+  <!-- ============ BANCO DE PROMPTS ============ -->
+  <div class="scene-cut"><span class="cut-icon">📋</span> PROMPTS</div>
+  <section id="prompts" class="module-section">
+    <div class="module-title">📋 Banco de Prompts</div>
+    <p class="module-subtitle">Todos os 5 prompts do PromptBoss — prontos para copiar e usar</p>
+
+    <!-- Prompt 1 -->
+    <h3>Prompt 1: Mude para Animação 3D Detalhada</h3>
+    <p>Use para converter qualquer imagem/foto para estilo de animação 3D cinematográfica.</p>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span class="prompt-label">PROMPT 1 — ANIMAÇÃO 3D DETALHADA</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 Copiar</button>
+      </div>
+      <div class="prompt-content">[Pedido] Mude para [Estilo de animação 3d de filme] traços levemente de cartoon mas com texturas e detalhes.
+
+[Melhorar composição] Com composições mais profissionais como de um diretor de fotografia: Regra dos terços, proporção áurea, bem como os filmes premiados.
+
+[Iluminação] A luz é realista e cinematográfica da luz de um amanhecer, sempre gravado do lado da sombra, como em um documentário
+
+[Consistência] Mantenha os personagens. Apenas mude a ação para posição que foi pedido.
+
+[Mais realismo] Quero texturas no personagem, poros na pele, leves imperfeições, textura na roupa desgaste, ferrugem nas partes de metal e brilhos realistas.
+
+[Melhorar estética de câmera] Lente cine f1.8 com aberração cromática</div>
+    </div>
+
+    <!-- Prompt 2 -->
+    <h3>Prompt 2: Storytelling Visual 4 Imagens</h3>
+    <p>Gera 4 imagens com variação de enquadramentos para contar uma história visual de uma vez.</p>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span class="prompt-label">PROMPT 2 — STORYTELLING VISUAL</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 Copiar</button>
+      </div>
+      <div class="prompt-content">Crie 4 imagens verticais uma do lado da outra, contando uma historia com variação de enquadramentos.
+
+[Historia]
+
+Quero variação de enquadramentos, planos mais ricos como: plano geral, over the shoulder, planos macro, primeiro plano focado, primeiro plano desfocado.
+
+Sem alterar a cena. personagens devem estar no mesmo lugar.
+
+Com composições mais profissionais como de um diretor de fotografia: Regra dos terços, proporção áurea, bem como os filmes premiados. Mantenha os mesmos personagem.
+
+A luz é realista, sempre gravado do lado da sombra, como em um documentário. Mantenha o estilo da imagem de referência, como se tudo fosse parte de um mesmo filme. Quero texturas no personagem, detalhes na pele, leves imperfeições, textura na roupa e brilhos realistas. Lente 35mm f1.8 com aberração cromática</div>
+    </div>
+
+    <!-- Prompt 3 -->
+    <h3>Prompt 3: Upscale Simplificado</h3>
+    <p>Para melhorar a resolução e detalhes de uma imagem já gerada.</p>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span class="prompt-label">PROMPT 3 — UPSCALE</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 Copiar</button>
+      </div>
+      <div class="prompt-content">Recrie a imagem, em alta resolução, com detalhes e texturas reais, detalhamento do personagem mantendo a consistência da referencia, melhore a textura da roupa e do cenário. Mantenha a mesma composição, cenario e ação, melhorando apenas os detalhes pedidos. A luz é realista, sempre gravado do lado da sombra, como em um documentário. Lente cine f2.8 com aberração cromática</div>
+    </div>
+
+    <!-- Prompt 4 -->
+    <h3>Prompt 4: Banco de Consistência [Corpo]</h3>
+    <p>Gera várias visões do personagem (frente, lado, costas) para manter consistência.</p>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span class="prompt-label">PROMPT 4 — CONSISTÊNCIA (CORPO)</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 Copiar</button>
+      </div>
+      <div class="prompt-content">Crie várias imagens do personagem, de corpo inteiro, de lado, de frente, de costas
+
+sempre um full body shot em todas imagens
+
+A luz é realista e cinematográfica da luz de um amanhecer, sempre gravado do lado da sombra, como em um documentário
+
+Mantenha os personagens, proporção e formatos bem fiéis, Apenas mude a ação para posição que foi pedido e estilo de animação 3d detalhado com texturas.
+
+Quero texturas no personagem, na pele, leves imperfeições, textura na roupa e brilhos realistas. Lente Câmera alexa com lente 35mm f1.8 com aberração cromática</div>
+    </div>
+
+    <!-- Prompt 5 -->
+    <h3>Prompt 5: Ponte (Esboço → Estilo)</h3>
+    <p>Converte para esboço a mão — use como passo intermediário (ponte) antes de converter para outro estilo.</p>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span class="prompt-label">PROMPT 5 — PONTE (ESBOÇO)</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 Copiar</button>
+      </div>
+      <div class="prompt-content">Mude para estilo de um desenho feito a mão, no formato de esboço feito com caneta preta. O fundo do cenário pode ser detalhado, não precisa pintar.
+
+Seja fiel e consistente com as formas e proporções</div>
+    </div>
+  </section>
+
+  <!-- ============ FERRAMENTAS ============ -->
+  <div class="scene-cut"><span class="cut-icon">🛠️</span> FERRAMENTAS</div>
+  <section id="ferramentas" class="module-section">
+    <div class="module-title">🛠️ Ferramentas Mencionadas</div>
+    <p class="module-subtitle">Todas as ferramentas de IA citadas no workshop</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Ferramenta</th><th>Tipo</th><th>Uso</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>ChatGPT</strong></td><td>🧠 LLM</td><td>Texto, planejamento, ideação</td></tr>
+          <tr><td><strong>Claude</strong></td><td>🧠 LLM</td><td>Texto, planejamento, análise</td></tr>
+          <tr><td><strong>Gemini</strong></td><td>🧠 LLM</td><td>Texto, planejamento, pesquisa</td></tr>
+          <tr><td><strong>Midjourney</strong></td><td>🖼️ Imagem</td><td>Criar imagens e frames de alta qualidade</td></tr>
+          <tr><td><strong>Seadream 4k</strong></td><td>🖼️ Imagem</td><td>Criar imagens com foco em qualidade</td></tr>
+          <tr><td><strong>Nano Banana Pro/2</strong></td><td>🖼️ Imagem</td><td>Criar imagens e upscale</td></tr>
+          <tr><td><strong>Kling 2.6 / 3.0</strong></td><td>🎬 Vídeo</td><td>Animar imagens em vídeo</td></tr>
+          <tr><td><strong>Veo 3.1</strong></td><td>🎬 Vídeo</td><td>Animar imagens em vídeo</td></tr>
+          <tr><td><strong>Suno v5</strong></td><td>🎵 Música</td><td>Criar trilhas sonoras</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ LINKS ============ -->
+  <div class="scene-cut"><span class="cut-icon">🔗</span> LINKS</div>
+  <section id="links" class="module-section">
+    <div class="module-title">🔗 Links Úteis</div>
+    <p class="module-subtitle">Todos os recursos do workshop</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">🎨 Slides Figma</div>
+        <div class="card-desc"><a href="https://www.figma.com/deck/bEYstc5c8yNgfXAu4lFJFK/IA-MAKER-4---Dia-1" target="_blank">Abrir no Figma</a></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Banco de Prompts</div>
+        <div class="card-desc"><a href="https://promptboss.ofilmboss.com/view/4f83787aa2ff37f5" target="_blank">Abrir PromptBoss</a></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🖼️ Imagens de Exercício</div>
+        <div class="card-desc"><a href="https://drive.google.com/drive/folders/1Bnm6Vb2Nzm4JYxWKWf8g5mk35KpovALk" target="_blank">Abrir Google Drive</a></div>
+      </div>
+      <div class="card">
+        <div class="card-title">✅ Resultados dos Exercícios</div>
+        <div class="card-desc"><a href="https://drive.google.com/drive/folders/1tp4G2qpkzgF0iEfSYdW6CRe05p74_r91" target="_blank">Abrir Google Drive</a></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📄 PDF de Apoio</div>
+        <div class="card-desc"><a href="https://drive.google.com/file/d/1zSfkF8q7x3MOk4wzGwGjEiQIV6cTAstu/view" target="_blank">Abrir PDF</a></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <p>Tutorial baseado no workshop <strong>IA MAKER 4 — Dia 1</strong> por <a href="https://www.instagram.com/ofilmboss/" target="_blank">@ofilmboss</a> / IA BOSS (Filmboss)</p>
+  <p style="margin-top:8px;">Criado como material de estudo pessoal.</p>
+</footer>
+
+<script>
+// ========== PROGRESS BAR ==========
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = progress + '%';
+});
+
+// ========== DARK/LIGHT MODE ==========
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  themeToggle.textContent = isLight ? '🌙 Dark' : '☀️ Light';
+});
+
+// ========== SIDEBAR MOBILE ==========
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+
+hamburger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+});
+// Close sidebar on link click (mobile)
+sidebar.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+  });
+});
+
+// ========== ACTIVE SECTION HIGHLIGHT ==========
+const sections = document.querySelectorAll('.module-section');
+const navLinks = document.querySelectorAll('.sidebar a');
+
+const observerOptions = { rootMargin: '-20% 0px -70% 0px' };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, observerOptions);
+
+sections.forEach(section => {
+  if (section.id) observer.observe(section);
+});
+
+// ========== COPY PROMPT ==========
+function copyPrompt(btn) {
+  const block = btn.closest('.prompt-block') || btn.closest('.accordion-body')?.querySelector('.prompt-block');
+  const content = block ? block.querySelector('.prompt-content') : null;
+  if (!content) return;
+
+  navigator.clipboard.writeText(content.textContent.trim()).then(() => {
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ========== ACCORDION ==========
+function toggleAccordion(trigger) {
+  const body = trigger.nextElementSibling;
+  trigger.classList.toggle('open');
+  body.classList.toggle('show');
+}
+
+// ========== CHECKLIST ==========
+document.querySelectorAll('.checklist-item input').forEach(checkbox => {
+  checkbox.addEventListener('change', function() {
+    this.closest('.checklist-item').classList.toggle('checked', this.checked);
+  });
+});
+</script>
+
+</body>
+</html>
